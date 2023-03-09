@@ -1,5 +1,6 @@
 from qm_token import Token
 from qm_token_type import TokenType
+from functions import str_contains_regex
 
 import re
 
@@ -11,7 +12,7 @@ class Lexer:
         self.func_var: str = func_var
 
         self.__rm_whitespaces()
-        self.tokens = self.__create_tokens()
+        self.tokens: list[Token] = self.__create_tokens()
 
         print(
             f'\nInput: "{self.func_name}", "{self.func_expr}", "{self.func_var}"\n\n--> {self.func_name}({self.func_var}) = {self.func_expr}\n')
@@ -21,10 +22,10 @@ class Lexer:
 
         print()
 
-    def __rm_whitespaces(self):
+    def __rm_whitespaces(self) -> None:
         self.func_expr = self.func_expr.replace(' ', '')
 
-    def __create_tokens(self):
+    def __create_tokens(self) -> list[Token]:
         tokens: list[Token] = []
         i = 0
 
@@ -36,32 +37,27 @@ class Lexer:
                 i += 1
                 continue
 
-            elif (not not re.search('[(|)|^]', curr)):
+            elif (str_contains_regex(curr, '[(|)|^]')):
                 tokens.append(Token(curr, TokenType.SEPERATOR))
                 i += 1
                 continue
 
-            elif (not not re.search('[+|-|*|/]', curr)):
+            elif (str_contains_regex(curr, '[+|-|*|/]')):
                 tokens.append(Token(curr, TokenType.OPERATOR))
                 i += 1
                 continue
 
-            elif (not not re.search('[0-9]', curr)):
-
+            elif (str_contains_regex(curr, '[0-9]')):
                 if (i == len(self.func_expr)-1):
-                    # if (i == len(self.func_expr)-1 or not re.search('[0-9]', self.func_expr[i+1])):
                     tokens.append(Token(curr, TokenType.NUMBER))
                     i += 1
                     continue
-
                 else:
                     j = i + 1
                     temp = curr
-
-                    while (not not re.search('[0-9]', self.func_expr[j])):
+                    while (str_contains_regex(self.func_expr[j], '[0-9]')):
                         temp += self.func_expr[j]
                         j += 1
-
                     tokens.append(Token(temp, TokenType.NUMBER))
                     i = j
                     continue
