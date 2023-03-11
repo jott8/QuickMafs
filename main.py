@@ -1,5 +1,7 @@
-from qm_token import Token
-from qm_token_type import TokenType
-from qm_lexer import Lexer
+from qm_parser import Parser
 
-l = Lexer('f', '250*x^ (23500)+x^(356)*3', 'x')
+p = Parser('f', '400-4', 'x')
+# p = Parser('f', '4+4*2/(1-5)', 'x')
+# p = Parser('f', '30*20', 'x')
+# p = Parser('f', '400-4', 'x')
+p.calc_postfix()
