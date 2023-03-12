@@ -1,14 +1,15 @@
 from qm_token import Token, TokenType, Associativity
-from functions import str_contains_regex, func_timer
+from helper_functions import str_contains_regex, func_timer
 
 import copy
 
 
 class Parser:
-    def __init__(self, func_name: str, func_expr: str, func_var: str) -> None:
-        self.func_name: str = func_name
+    def __init__(self, func_expr, **kwargs) -> None:
+        # def __init__(self, func_name: str, func_expr: str, func_var: str) -> None:
+        self.func_name: str = kwargs.get('func_name')
         self.func_expr: str = func_expr
-        self.func_var: str = func_var
+        self.func_var: str = kwargs.get('func_var')
 
         self.tokens: list[Token] = self.__create_tokens()
         self.postfix_tokens: list[Token] = self.__to_postfix()
