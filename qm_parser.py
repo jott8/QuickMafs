@@ -108,6 +108,8 @@ class Parser:
                 if (operator_stack):
                     while (operator_stack[-1].type == TokenType.OPERATOR and ((curr_token.associativity == Associativity.LEFT and curr_token.precedence <= operator_stack[-1].precedence) or (curr_token.associativity == Associativity.RIGHT and curr_token.precedence < operator_stack[-1].precedence))):
                         output_queue.append(operator_stack.pop())
+                        if (not operator_stack):
+                            break
                 operator_stack.append(curr_token)
             elif (curr_token.type == TokenType.PAREN_LEFT):
                 operator_stack.append(curr_token)
@@ -148,7 +150,7 @@ class Parser:
 
         return float(stack[0])
 
-    def calc_postfix_x(self, x: float):
+    def calc_postfix_x(self, x: float) -> float:
         # TODO check data type in stack
         input_queue: list[Token] = copy.deepcopy(self.postfix_tokens)
         stack = []
