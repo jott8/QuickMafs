@@ -165,13 +165,13 @@ class Parser:
                     str_val1 = stack.pop()
                     str_val2 = stack.pop()
 
-                    if (str_val1 == 'x' and str_val2 == 'x'):
+                    if (str_val1 == self.func_var and str_val2 == self.func_var):
                         val1 = x
                         val2 = x
-                    elif (str_val1 == 'x'):
+                    elif (str_val1 == self.func_var):
                         val1 = x
                         val2 = float(str_val2)
-                    elif (str_val2 == 'x'):
+                    elif (str_val2 == self.func_var):
                         val1 = float(str_val1)
                         val2 = x
                     else:
