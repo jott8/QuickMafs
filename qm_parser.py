@@ -1,5 +1,5 @@
 from qm_token import Token, TokenType, Associativity
-from helper_functions import str_contains_regex, func_timer
+from helper_functions import str_contains_regex
 
 import copy
 
@@ -25,9 +25,6 @@ class Parser:
     def print_data(self) -> None:
         print(
             f'\nInput: "{self.func_name}", "{self.func_expr}", "{self.func_var}"\n\nAs function: {self.func_name}({self.func_var}) = {self.func_expr}\n')
-
-    def __rm_whitespaces(self) -> None:
-        self.func_expr = self.func_expr.replace(' ', '')
 
     # Lexical analysis
     def __create_tokens(self) -> list[Token]:
@@ -85,15 +82,8 @@ class Parser:
 
         return tokens
 
-    def __shunting_yard(self) -> None:
-        pass
-
     def __to_postfix(self) -> list[Token]:
         # Rules: https://aquarchitect.github.io/swift-algorithm-club/Shunting%20Yard/
-
-        # Input queue -> self.tokens
-        # Operator stack
-        # Output queue
 
         # list, pop(0) --> queue
         # list, pop() --> stack
@@ -107,10 +97,8 @@ class Parser:
 
             if (curr_token.type == TokenType.OPERATOR):
                 if (operator_stack):
-                    while (operator_stack[-1].type == TokenType.OPERATOR and ((curr_token.associativity == Associativity.LEFT and curr_token.precedence <= operator_stack[-1].precedence) or (curr_token.associativity == Associativity.RIGHT and curr_token.precedence < operator_stack[-1].precedence))):
+                    while (operator_stack and operator_stack[-1].type == TokenType.OPERATOR and ((curr_token.associativity == Associativity.LEFT and curr_token.precedence <= operator_stack[-1].precedence) or (curr_token.associativity == Associativity.RIGHT and curr_token.precedence < operator_stack[-1].precedence))):
                         output_queue.append(operator_stack.pop())
-                        if (not operator_stack):
-                            break
                 operator_stack.append(curr_token)
             elif (curr_token.type == TokenType.PAREN_LEFT):
                 operator_stack.append(curr_token)
@@ -125,79 +113,6 @@ class Parser:
             output_queue.append(operator_stack.pop())
 
         return output_queue
-
-    def calc_postfix(self) -> float:
-        # TODO check data type in stack
-        input_queue: list[Token] = copy.deepcopy(self.postfix_tokens)
-        stack = []
-
-        while (input_queue):
-            curr_token = input_queue.pop(0)
-
-            if (curr_token.type == TokenType.NUMBER):
-                stack.append(curr_token.lexeme)
-            elif (curr_token.type == TokenType.OPERATOR):
-                if (len(stack) >= 2):
-                    str_val1 = stack.pop()
-                    str_val2 = stack.pop()
-                    val1 = float(str_val1)
-                    val2 = float(str_val2)
-
-                    stack.append(
-                        str(self.__calc_token(curr_token.lexeme, val1, val2)))
-                else:
-                    stack.append(self.__calc_token(
-                        curr_token.lexeme, float(stack.pop()), float(input_queue.pop(0).lexeme)))
-
-        return float(stack[0])
-
-    def calc_postfix_x(self, x: float) -> float:
-        # TODO check data type in stack
-        input_queue: list[Token] = copy.deepcopy(self.postfix_tokens)
-        stack = []
-
-        while (input_queue):
-            curr_token = input_queue.pop(0)
-
-            if (curr_token.type == TokenType.NUMBER or curr_token.type == TokenType.VARIABLE):
-                stack.append(curr_token.lexeme)
-            elif (curr_token.type == TokenType.OPERATOR):
-                if (len(stack) >= 2):
-                    str_val1 = stack.pop()
-                    str_val2 = stack.pop()
-
-                    if (str_val1 == self.func_var and str_val2 == self.func_var):
-                        val1 = x
-                        val2 = x
-                    elif (str_val1 == self.func_var):
-                        val1 = x
-                        val2 = float(str_val2)
-                    elif (str_val2 == self.func_var):
-                        val1 = float(str_val1)
-                        val2 = x
-                    else:
-                        val1 = float(str_val1)
-                        val2 = float(str_val2)
-
-                    stack.append(
-                        str(self.__calc_token(curr_token.lexeme, val1, val2)))
-                else:
-                    stack.append(self.__calc_token(
-                        curr_token.lexeme, float(stack.pop()), float(input_queue.pop(0).lexeme)))
-
-        return float(stack[0])
-
-    def __calc_token(self, lexeme: str, val1: float, val2: float) -> float:
-        if (lexeme == '+'):
-            return val1 + val2
-        elif (lexeme == '-'):
-            return val2 - val1
-        elif (lexeme == '*'):
-            return val1 * val2
-        elif (lexeme == '/'):
-            return val2 / val1
-        elif (lexeme == '^'):
-            return val2**val1
 
     def postfix_str(self) -> str:
         string = ''

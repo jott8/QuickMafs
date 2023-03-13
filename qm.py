@@ -1,5 +1,5 @@
 from qm_parser import Parser
-from helper_functions import str_contains_regex, get_regex_match
+from helper_functions import str_contains_regex
 
 
 # Expression must not contain variable
